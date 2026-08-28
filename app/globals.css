@@ -1,0 +1,450 @@
+@import "tailwindcss";
+
+/* =========================================================
+   GSB — Good Standing Bridge
+   Design tokens
+   ========================================================= */
+:root{
+  --ground:#E4E3EB;
+  --surface:#FFFFFF;
+  --surface-2:#F1F0F6;
+  --ink:#12111A;
+  --ink-2:#353343;
+  --muted:#57546A;
+  --line:#D2D0DE;
+  --line-2:#E6E4EE;
+  --primary:#282366;
+  --primary-soft:#DEDBF0;
+  --accent:#8A4E17;
+  --accent-soft:#F6E5D2;
+  --danger:#8E2733;
+  --danger-soft:#F8DEE0;
+  --ok:#1B5748;
+  --ok-soft:#D6ECE4;
+  --frame:0 2px 6px rgba(18,17,26,.10),0 24px 64px rgba(18,17,26,.16);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C0B11;
+    --surface:#1B1A24;
+    --surface-2:#26242F;
+    --ink:#F2F1F7;
+    --ink-2:#CBC9D6;
+    --muted:#A5A2B3;
+    --line:#3A3846;
+    --line-2:#2C2A36;
+    --primary:#A9A4F0;
+    --primary-soft:#2A2652;
+    --accent:#EDA968;
+    --accent-soft:#3B2712;
+    --danger:#F0949C;
+    --danger-soft:#3F1D22;
+    --ok:#6ECFB2;
+    --ok-soft:#12352C;
+    --frame:0 2px 6px rgba(0,0,0,.5),0 24px 64px rgba(0,0,0,.65);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C0B11;--surface:#1B1A24;--surface-2:#26242F;--ink:#F2F1F7;--ink-2:#CBC9D6;
+  --muted:#A5A2B3;--line:#3A3846;--line-2:#2C2A36;--primary:#A9A4F0;--primary-soft:#2A2652;
+  --accent:#EDA968;--accent-soft:#3B2712;--danger:#F0949C;--danger-soft:#3F1D22;
+  --ok:#6ECFB2;--ok-soft:#12352C;
+  --frame:0 2px 6px rgba(0,0,0,.5),0 24px 64px rgba(0,0,0,.65);
+}
+
+@theme inline{
+  --color-ground:var(--ground);
+  --color-surface:var(--surface);
+  --color-ink:var(--ink);
+  --color-primary:var(--primary);
+  --color-accent:var(--accent);
+}
+
+*{box-sizing:border-box}
+html,body{padding:0;margin:0}
+body{
+  background:var(--ground);color:var(--ink);
+  font-family:"Gothic A1",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;
+  font-size:16px;line-height:1.68;-webkit-font-smoothing:antialiased;word-break:keep-all;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;padding:0}
+button:focus-visible,[tabindex]:focus-visible{outline:2.5px solid var(--primary);outline-offset:2px;border-radius:5px}
+/* mono 는 코드·라벨·식별자 전용이다.
+   금액·수량은 본문 서체의 lining figure 로 조판한다 — 은행 서식은 금액을 타자기체로 쓰지 않는다.
+   자릿수 정렬이 필요한 곳은 tabular-nums 로 유지하므로 표 정렬은 깨지지 않는다. */
+.mono{font-family:"Courier Prime",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+
+/* ---------- page shell ---------- */
+.page{min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:30px 16px 48px;gap:20px}
+.brandbar{width:100%;max-width:440px;display:flex;align-items:baseline;gap:10px;padding:0 2px}
+.brandbar .mark{font-family:"Courier Prime",monospace;font-weight:700;font-size:15px;letter-spacing:.2em;color:var(--primary)}
+.brandbar .desc{font-size:13px;color:var(--muted);margin-left:auto;font-weight:500}
+
+.device{
+  width:100%;max-width:440px;height:840px;max-height:calc(100dvh - 130px);min-height:620px;
+  background:var(--surface);border-radius:26px;box-shadow:var(--frame);
+  display:flex;flex-direction:column;overflow:hidden;position:relative;border:1px solid var(--line);
+}
+
+.statusbar{
+  flex:none;height:44px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 8px 0 20px;font-family:"Courier Prime",monospace;font-size:12.5px;color:var(--ink-2);
+  border-bottom:1px solid var(--line-2);font-weight:400;
+}
+/* 언어 토글 — 시각적으로는 작지만 터치 영역은 44x44를 확보한다 */
+.langtoggle{display:flex;align-items:center}
+.langtoggle .langbtn{
+  min-width:44px;height:44px;display:grid;place-items:center;
+  font-family:"Courier Prime",monospace;font-size:12.5px;letter-spacing:.08em;font-weight:400;
+  color:var(--muted);transition:color .18s;position:relative;
+}
+.langtoggle .langbtn+.langbtn::before{
+  content:"";position:absolute;left:0;top:14px;bottom:14px;width:1px;background:var(--line);
+}
+.langtoggle .langbtn:hover{color:var(--ink-2)}
+.langtoggle .langbtn[aria-pressed="true"]{color:var(--primary);font-weight:700}
+.langtoggle .langbtn[aria-pressed="true"]:hover{color:var(--primary)}
+.viewport{flex:1;overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth}
+.screen{padding:24px 20px 32px;animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- tabs ---------- */
+.tabs{flex:none;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);background:var(--surface);padding-bottom:env(safe-area-inset-bottom)}
+.tab{padding:12px 4px 15px;display:flex;flex-direction:column;align-items:center;gap:5px;color:var(--muted);transition:color .18s}
+.tab svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tab span{font-size:12px;font-weight:600;letter-spacing:-.01em}
+.tab[aria-selected="true"]{color:var(--primary)}
+.tab:hover{color:var(--ink-2)}
+.tab[aria-selected="true"]:hover{color:var(--primary)}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-family:"Courier Prime",monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--accent);display:block;margin-bottom:10px;font-weight:400;
+}
+.title{font-size:25px;font-weight:800;line-height:1.32;letter-spacing:-.025em;margin:0 0 10px;text-wrap:balance}
+.lede{font-size:15px;color:var(--ink-2);margin:0 0 22px;line-height:1.65;font-weight:500}
+.sub{font-size:15px;font-weight:700;margin:0 0 12px;letter-spacing:-.015em}
+.quiet{font-family:"Gowun Batang","Nanum Myeongjo",serif;font-size:16.5px;line-height:1.82;color:var(--ink-2);margin:0 0 24px;font-weight:400}
+
+/* ---------- persona picker ---------- */
+.personas{display:flex;flex-direction:column;gap:9px;margin-bottom:22px}
+.persona{
+  display:flex;align-items:center;gap:13px;padding:14px 15px;width:100%;text-align:left;
+  border:1.5px solid var(--line);border-radius:13px;background:var(--surface);transition:.18s;
+}
+.persona:hover{border-color:var(--primary);background:var(--surface-2)}
+.persona[aria-pressed="true"]{border-color:var(--primary);background:var(--primary-soft)}
+.persona .flag{
+  width:38px;height:38px;flex:none;border-radius:10px;background:var(--surface-2);
+  display:grid;place-items:center;font-family:"Courier Prime",monospace;font-size:13px;font-weight:700;
+  color:var(--primary);border:1px solid var(--line);
+}
+.persona[aria-pressed="true"] .flag{background:var(--surface);border-color:var(--primary)}
+.persona .nm{font-size:15.5px;font-weight:700;line-height:1.3}
+.persona .mt{font-size:13px;color:var(--muted);line-height:1.45;font-weight:500}
+
+/* ---------- ID card ---------- */
+.cardwrap{position:relative;margin-bottom:18px}
+.idcard{
+  position:relative;border-radius:15px;overflow:hidden;border:1.5px solid var(--line);
+  background:linear-gradient(140deg,var(--surface-2),var(--surface));aspect-ratio:1.6;
+  padding:18px 20px;display:flex;flex-direction:column;justify-content:space-between;
+}
+.idcard .demo-stamp{
+  position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;
+  font-family:"Courier Prime",monospace;font-size:38px;letter-spacing:.3em;font-weight:700;
+  color:var(--ink);opacity:.08;transform:rotate(-14deg);
+}
+.idcard .hd{font-family:"Courier Prime",monospace;font-size:11px;letter-spacing:.14em;color:var(--muted);font-weight:400}
+.idcard .no{font-family:"Courier Prime",monospace;font-size:18px;letter-spacing:.05em;color:var(--ink);margin-top:3px;font-weight:700}
+.idcard .rows{display:grid;grid-template-columns:auto 1fr;gap:5px 16px;font-size:13.5px;margin:0}
+.idcard .rows dt{color:var(--muted);font-family:"Courier Prime",monospace;font-size:11px;letter-spacing:.08em;align-self:center;font-weight:400}
+.idcard .rows dd{margin:0;font-weight:700}
+.scanline{position:absolute;left:0;right:0;height:2.5px;background:var(--primary);box-shadow:0 0 16px 4px var(--primary);opacity:0}
+/* 심사 데모에서 3초는 길다 — 1회 반복 1.6초 */
+.scanning .scanline{animation:scan 1.6s ease-in-out 1}
+.skipcard{position:absolute;inset:0;border-radius:15px;background:transparent}
+@keyframes scan{0%{top:0;opacity:0}10%{opacity:.95}90%{opacity:.95}100%{top:100%;opacity:0}}
+
+/* ---------- extracted ---------- */
+.extracted{border:1.5px solid var(--line);border-radius:13px;overflow:hidden;background:var(--surface);margin:22px 0}
+.extracted .eh{
+  padding:11px 16px;background:var(--ok-soft);border-bottom:1px solid var(--line-2);
+  font-family:"Courier Prime",monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ok);display:flex;align-items:center;gap:8px;font-weight:400;
+}
+.extracted .eh::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ok)}
+.exrow{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:13px 16px;border-bottom:1px solid var(--line-2)}
+.exrow:last-child{border-bottom:none}
+.exrow .k{font-size:14px;color:var(--muted);font-weight:500;flex:none}
+.exrow .v{font-size:15px;font-weight:700;letter-spacing:-.01em;text-align:right;font-variant-numeric:tabular-nums lining-nums}
+.exrow .v small{display:block;font-weight:500;font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.45}
+
+/* ---------- 금융 좌표 ---------- */
+.coords{display:flex;flex-direction:column;gap:9px}
+.coord{border-radius:12px;padding:14px 16px}
+.coord.now{background:var(--ok-soft)}
+.coord.soon{background:var(--accent-soft)}
+.coord.never{background:var(--surface-2);border:1px solid var(--line)}
+.coord .ct{font-family:"Courier Prime",monospace;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;display:block;font-weight:400}
+.coord.now .ct{color:var(--ok)}
+.coord.soon .ct{color:var(--accent)}
+.coord.never .ct{color:var(--muted)}
+.coord ul{margin:0;padding-left:18px;font-size:14px;line-height:1.72;color:var(--ink-2);font-weight:500}
+.coord.never ul{color:var(--muted)}
+
+/* ---------- 3열 대조 — 가로 스냅 캐러셀 ---------- */
+/* 세로로 쌓으면 스크롤해야 다음 카드가 보여 "나란히 비교"라는 감각이 사라진다. */
+.compare{
+  display:flex;align-items:stretch;gap:11px;
+  overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;
+  scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;
+}
+.compare::-webkit-scrollbar{display:none}
+.compare .col{flex:0 0 86%;scroll-snap-align:center;display:flex;flex-direction:column}
+.compare .col ul{flex:1}
+.col{border-radius:14px;border:1.5px solid var(--line);overflow:hidden;background:var(--surface)}
+.col.bank{border-color:var(--danger)}
+.col.real{border-color:var(--ok)}
+.col.mule{background:var(--surface-2)}
+.col .ch{padding:12px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line-2);flex-wrap:wrap}
+.col .ch .lbl{font-size:14.5px;font-weight:800;letter-spacing:-.015em}
+.col.bank .ch{background:var(--danger-soft)}
+.col.bank .ch .lbl{color:var(--danger)}
+.col.real .ch{background:var(--ok-soft)}
+.col.real .ch .lbl{color:var(--ok)}
+.col.mule .ch .lbl{color:var(--ink-2)}
+.col .ch .tagx{
+  margin-left:auto;font-family:"Courier Prime",monospace;font-size:11px;letter-spacing:.1em;
+  padding:3px 9px;border-radius:20px;background:var(--surface);color:var(--muted);border:1px solid var(--line);font-weight:400;
+}
+.col ul{margin:0;padding:12px 16px 14px 34px;font-size:14px;line-height:1.78;color:var(--ink-2);font-weight:500}
+.col.mule ul{color:var(--muted)}
+.col .foot{
+  padding:11px 16px;border-top:1px solid var(--line-2);font-size:13.5px;font-weight:700;
+  display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+}
+.col .foot span:last-child{font-weight:800;font-variant-numeric:tabular-nums lining-nums}
+.col.bank .foot{color:var(--danger)}
+.col.real .foot{color:var(--ok)}
+
+/* 세그먼트 인디케이터 — 표시는 작지만 터치 영역은 44px */
+.segs{display:flex;justify-content:center;gap:4px;margin-top:6px}
+.seg{height:44px;display:flex;align-items:center;padding:0 5px}
+.seg::before{content:"";display:block;width:26px;height:4px;border-radius:2px;background:var(--line);transition:background .2s,width .2s}
+.seg[aria-current="true"]::before{background:var(--primary);width:34px}
+.seg:hover::before{background:var(--muted)}
+.seg[aria-current="true"]:hover::before{background:var(--primary)}
+
+/* 겹침 지표 — "규제가 2번과 3번을 구분하지 못한다"를 숫자 하나로 증명한다 */
+.overlap{
+  margin-top:8px;padding:15px 16px;border-radius:13px;
+  border:1.5px solid var(--ok);background:var(--ok-soft);text-align:center;
+}
+.overlap .ol-lbl{display:block;font-size:13.5px;line-height:1.5;font-weight:600;color:var(--ink-2)}
+.overlap .ol-v{display:flex;align-items:baseline;justify-content:center;gap:3px;margin-top:5px}
+.overlap .ol-n{font-size:32px;font-weight:800;line-height:1.15;letter-spacing:-.03em;color:var(--ok);font-variant-numeric:tabular-nums lining-nums}
+.overlap .ol-unit{font-size:15px;font-weight:700;color:var(--ok)}
+
+.punch{
+  margin:18px 0 0;padding:16px 17px;border-radius:13px;background:var(--primary);
+  font-size:14.5px;line-height:1.65;font-weight:600;color:var(--surface);
+}
+.punch b{font-weight:800}
+
+/* ---------- bank list ---------- */
+.banks{display:flex;flex-direction:column;gap:11px}
+.bank{border:1.5px solid var(--line);border-radius:14px;background:var(--surface);overflow:hidden}
+.bank.best{border-color:var(--primary);border-width:2px}
+.bank.blocked{background:var(--surface-2)}
+.bank .bh{display:flex;align-items:center;gap:11px;padding:14px 15px;width:100%;text-align:left;transition:.15s}
+.bank .bh:hover{background:var(--surface-2)}
+.bank .rank{font-family:"Courier Prime",monospace;font-size:13px;font-weight:700;width:24px;color:var(--muted);flex:none}
+.bank.best .rank{color:var(--primary)}
+.bank .bn{font-size:16px;font-weight:800;letter-spacing:-.02em;flex:1 1 auto;min-width:0;line-height:1.3;overflow-wrap:break-word}
+.bank .chev{margin-left:auto;flex:none;width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:2.2;transition:transform .22s}
+.bank.open .chev{transform:rotate(180deg)}
+.bdg{flex:none;font-family:"Courier Prime",monospace;font-size:10.5px;letter-spacing:.08em;padding:3.5px 8px;border-radius:20px;white-space:nowrap;font-weight:700}
+.bdg.official{background:var(--ok-soft);color:var(--ok)}
+.bdg.second{background:var(--accent-soft);color:var(--accent)}
+.bdg.none{background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line)}
+.bdg.no{background:var(--danger-soft);color:var(--danger)}
+/* 통과 가능성 밴드 — 숫자는 표기하지 않는다. 막대 너비만 s를 그대로 쓴다. */
+.likelihood{padding:0 15px 12px 50px}
+.lk-meta{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:6px}
+.lk-lbl{font-family:"Courier Prime",monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:400}
+.lk-band{font-size:13px;font-weight:800;letter-spacing:-.01em;color:var(--muted)}
+.likelihood.high .lk-band{color:var(--ok)}
+.likelihood.mid .lk-band{color:var(--accent)}
+.likelihood.low .lk-band{color:var(--danger)}
+.lk-bar{height:6px;border-radius:3px;background:var(--line-2);overflow:hidden}
+.lk-bar i{display:block;height:100%;border-radius:3px;transition:width .5s ease}
+.likelihood.high .lk-bar i{background:var(--ok)}
+.likelihood.mid .lk-bar i{background:var(--accent)}
+.likelihood.low .lk-bar i{background:var(--danger)}
+
+/* 요건 대조 — 순위의 실제 근거 */
+.bank .detail .dt{font-family:"Courier Prime",monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:9px;font-weight:400}
+.factors{list-style:none;margin:0 0 13px;padding:0;display:flex;flex-direction:column;gap:9px}
+.factors li{display:flex;gap:9px;align-items:flex-start}
+.factors .fic{width:15px;height:15px;flex:none;margin-top:3.5px;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.factors li.met .fic{stroke:var(--ok)}
+.factors li.unmet .fic{stroke:var(--danger)}
+.factors .ftxt{display:block;font-size:13.5px;line-height:1.5;font-weight:600;color:var(--ink-2)}
+.factors li.unmet .ftxt{color:var(--muted)}
+.factors .fnote{display:block;font-size:13px;line-height:1.5;color:var(--muted);margin-top:2px;font-weight:500}
+
+.bank .verdict{padding:0 15px 14px 50px;font-size:14px;line-height:1.6;display:flex;gap:8px;align-items:flex-start;font-weight:600}
+.bank .verdict .ic{flex:none;font-family:"Courier Prime",monospace;font-size:12px;margin-top:2px}
+.bank .verdict.good{color:var(--ok)}
+.bank .verdict.bad{color:var(--danger)}
+.bank .detail{padding:0 15px 15px}
+.bank .chan{font-size:13.5px;color:var(--ink-2);font-weight:600;margin-bottom:10px}
+.bank .req{padding:12px 14px;background:var(--surface-2);border-radius:10px;font-size:13.5px;line-height:1.65;color:var(--ink-2);font-weight:500}
+.bank .req .rt{font-family:"Courier Prime",monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px;font-weight:400}
+.src{margin-top:11px;font-family:"Courier Prime",monospace;font-size:11.5px;letter-spacing:.02em;color:var(--muted);padding-top:10px;border-top:1px dashed var(--line);line-height:1.55}
+
+/* ---------- checklist ---------- */
+.progress{margin-bottom:16px}
+.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:9px}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:4px;transition:width .4s ease}
+.pmeta{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;font-weight:600}
+.pmeta .n{font-family:"Courier Prime",monospace;font-weight:400;color:var(--accent)}
+.checks{display:flex;flex-direction:column;gap:8px}
+.chk{display:flex;gap:12px;align-items:flex-start;padding:13px 14px;width:100%;text-align:left;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);transition:.18s}
+.chk:hover{border-color:var(--accent)}
+.chk[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.chk .box{width:20px;height:20px;border-radius:6px;border:2px solid var(--line);flex:none;margin-top:2px;display:grid;place-items:center;transition:.18s;background:var(--surface)}
+.chk[aria-pressed="true"] .box{background:var(--accent);border-color:var(--accent)}
+.chk .box svg{width:12px;height:12px;stroke:var(--surface);stroke-width:3;fill:none;opacity:0}
+.chk[aria-pressed="true"] .box svg{opacity:1}
+.chk .cn{font-size:14.5px;font-weight:700;line-height:1.4}
+.chk .cd{font-size:13px;color:var(--muted);line-height:1.55;margin-top:3px;font-weight:500}
+.chk .star{font-family:"Courier Prime",monospace;font-size:10.5px;letter-spacing:.08em;color:var(--accent);margin-left:7px;font-weight:400}
+
+/* ---------- defend ---------- */
+.samples{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.sample{padding:13px 14px;width:100%;text-align:left;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);font-size:14px;line-height:1.55;color:var(--ink-2);transition:.18s;font-weight:500}
+.sample:hover{border-color:var(--primary);background:var(--surface-2)}
+.sample[aria-pressed="true"]{border-color:var(--primary);background:var(--primary-soft);color:var(--ink)}
+.sample .who{font-family:"Courier Prime",monospace;font-size:11px;letter-spacing:.1em;color:var(--muted);display:block;margin-bottom:5px;text-transform:uppercase;font-weight:400}
+/* ---------- 입력 + 판별 ---------- */
+.composer{position:relative;margin-bottom:4px}
+.composer textarea{
+  width:100%;display:block;padding:13px 14px 26px;border-radius:12px;resize:vertical;min-height:104px;
+  border:1.5px solid var(--line);background:var(--surface);color:var(--ink);
+  font-family:inherit;font-size:14.5px;line-height:1.6;font-weight:500;transition:border-color .18s;
+}
+.composer textarea::placeholder{color:var(--muted)}
+.composer textarea:focus{outline:none;border-color:var(--primary)}
+.composer textarea:focus-visible{outline:2.5px solid var(--primary);outline-offset:2px}
+.composer .cc{position:absolute;right:12px;bottom:9px;font-size:11.5px;letter-spacing:.02em;color:var(--muted);pointer-events:none}
+.sample:disabled{opacity:.55;cursor:default}
+.errbox{
+  margin-top:16px;padding:15px 16px;border-radius:13px;border:1.5px solid var(--line);
+  background:var(--surface-2);font-size:14px;line-height:1.6;color:var(--ink-2);font-weight:500;
+}
+.errbox p{margin:0}
+.errbox .cta{margin-top:11px}
+/* 판정 근거가 원문 어디였는지 보여준다 */
+.quoted{
+  margin:0 0 15px;padding:12px 14px;border-radius:10px;background:var(--surface-2);
+  border-left:3px solid var(--line);font-size:14px;line-height:1.65;color:var(--ink-2);
+  font-weight:500;white-space:pre-wrap;overflow-wrap:anywhere;
+}
+.quoted mark{background:var(--danger-soft);color:var(--danger);font-weight:700;padding:1px 3px;border-radius:4px}
+.result.caution .quoted mark{background:var(--accent-soft);color:var(--accent)}
+.result.clear .quoted mark{background:var(--surface-2);color:var(--ink-2)}
+.srcnote{margin:13px 0 0;padding-top:11px;border-top:1px solid var(--line-2);font-size:12px;line-height:1.5;color:var(--muted);font-weight:500}
+
+.result{border-radius:14px;overflow:hidden;border:2px solid var(--line);margin-top:4px;animation:fade .3s ease}
+.result .rh{padding:14px 16px}
+.result .rh .rt{font-size:17px;font-weight:800;letter-spacing:-.02em}
+.result.risk{border-color:var(--danger)}
+.result.risk .rh{background:var(--danger-soft)}
+.result.risk .rh .rt{color:var(--danger)}
+.result.caution{border-color:var(--accent)}
+.result.caution .rh{background:var(--accent-soft)}
+.result.caution .rh .rt{color:var(--accent)}
+/* clear 는 회색이다. 초록으로 칠하면 "안전 판정"으로 읽히는데 이 도구는 안전을 증명하지 못한다. */
+.result.clear{border-color:var(--line)}
+.result.clear .rh{background:var(--surface-2)}
+.result.clear .rh .rt{color:var(--muted)}
+/* 판단 보류일 때 반드시 노출되는 경고 */
+.holdnote{
+  margin:0 0 14px;padding:12px 14px;border-radius:10px;
+  background:var(--accent-soft);border-left:3px solid var(--accent);
+  font-size:13.5px;line-height:1.6;color:var(--ink-2);font-weight:600;
+}
+.result .rb{padding:15px 16px;background:var(--surface)}
+.flags{display:flex;flex-direction:column;gap:9px;margin-bottom:16px}
+.flag{display:flex;gap:10px;font-size:14px;line-height:1.6;align-items:flex-start;color:var(--ink-2);font-weight:500}
+.flag .fq{font-family:"Courier Prime",monospace;font-size:11px;color:var(--danger);flex:none;margin-top:4px;letter-spacing:.07em;font-weight:400}
+.result.caution .flag .fq{color:var(--accent)}
+.result.clear .flag .fq{color:var(--muted)}
+.flag em{font-style:normal;background:var(--danger-soft);padding:1px 4px;border-radius:4px;color:var(--danger);font-weight:700}
+.trade-head{font-size:17px;font-weight:800;line-height:1.4;letter-spacing:-.02em;margin:0 0 12px;text-wrap:balance}
+.tradeoff{display:grid;grid-template-columns:1fr;gap:1.5px;background:var(--line);border-radius:12px;overflow:hidden;margin-bottom:14px}
+.tradeoff>div{background:var(--surface-2);padding:14px 13px}
+.tradeoff .tl{font-family:"Courier Prime",monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:7px;font-weight:400}
+.tradeoff .tv{font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1.1;font-variant-numeric:tabular-nums lining-nums}
+.tradeoff .gain .tv{color:var(--ink-2)}
+.tradeoff .lose .tv{color:var(--danger)}
+.tradeoff .tsub{font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:6px;font-weight:500}
+
+/* 시간 축 — 30만원과 12년은 단위가 달라 직접 비교가 안 된다. 일수로 통일해 대비시킨다. */
+.timescale{margin-bottom:15px;display:flex;flex-direction:column;gap:11px}
+.ts-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:5px}
+.ts-k{font-size:13px;color:var(--muted);font-weight:600}
+.ts-v{font-size:14px;font-weight:800;color:var(--ink-2);font-variant-numeric:tabular-nums lining-nums}
+.ts-bottom{display:flex;align-items:center;gap:11px}
+.ts-bottom .ts-track{flex:1;min-width:0}
+.ts-track{height:12px;border-radius:6px;background:var(--surface-2);border:1px solid var(--line-2);overflow:hidden}
+.ts-track i{display:block;height:100%;border-radius:6px;animation:grow .6s ease-out}
+/* 10일은 4,380일의 0.23%라 그대로 두면 보이지 않는다 — 최소 3px는 확보한다 */
+.ts-track i.lend{background:var(--ink-2);min-width:3px}
+.ts-track i.lose{background:var(--danger)}
+.ts-mult{font-size:18px;font-weight:800;color:var(--danger);letter-spacing:-.02em;flex:none;font-variant-numeric:tabular-nums lining-nums}
+.ts-note{font-size:13px;color:var(--muted);line-height:1.5;font-weight:500}
+/* to 를 비워두면 인라인 width(목표값)가 그대로 종점이 된다.
+   prefers-reduced-motion 에서는 전역 규칙이 animation을 끄고 목표 너비가 즉시 적용된다. */
+@keyframes grow{from{width:0}}
+.legal{font-size:13.5px;line-height:1.7;color:var(--ink-2);padding-top:13px;border-top:1px solid var(--line-2);font-weight:500}
+.legal b{color:var(--danger);font-weight:700}
+.legal .dim{color:var(--muted)}
+
+/* ---------- misc ---------- */
+.note{margin-top:18px;padding:14px 16px;border-radius:12px;background:var(--surface-2);border-left:3px solid var(--accent);font-size:13.5px;line-height:1.7;color:var(--ink-2);font-weight:500}
+.note b{color:var(--accent);font-weight:700}
+.cta{width:100%;padding:15px;border-radius:13px;background:var(--primary);color:var(--surface);font-size:15.5px;font-weight:700;letter-spacing:-.015em;margin-top:20px;transition:.18s}
+.cta:hover{opacity:.88}
+.cta:disabled{opacity:.5;cursor:default}
+.cta.ghost{background:transparent;border:2px solid var(--line);color:var(--ink-2);margin-top:9px}
+.cta.ghost:hover{border-color:var(--primary);color:var(--primary);opacity:1}
+
+.caption{width:100%;max-width:440px;font-size:13px;line-height:1.65;color:var(--muted);display:flex;flex-direction:column;gap:7px;font-weight:500}
+.caption .row{display:flex;gap:10px;align-items:baseline}
+.caption .k{font-family:"Courier Prime",monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;flex:none;width:66px;color:var(--ink-2)}
+
+/* ---------- 실기기에서는 프레임 없이 전체 화면 ----------
+   파일 맨 끝에 둔다 — .caption 등 뒤에 오는 동일 특이성 규칙에 밀리지 않도록. */
+@media (max-width:560px){
+  .page{padding:0;gap:0}
+  .brandbar,.caption{display:none}
+  .device{max-width:none;height:100dvh;max-height:100dvh;border-radius:0;border:none;box-shadow:none}
+}
+
+/* ---------- 오류 · 404 화면 ----------
+   기술 용어나 스택 트레이스를 노출하지 않는다. 중앙 정렬, 마크, 한 줄, 버튼 하나. */
+.fallback-page{min-height:100dvh;display:grid;place-items:center;padding:24px;background:var(--ground)}
+.fallback-card{width:100%;max-width:340px;text-align:center}
+.fallback-mark{
+  display:block;font-family:"Courier Prime",monospace;font-weight:700;font-size:15px;
+  letter-spacing:.2em;color:var(--primary);margin-bottom:18px;
+}
+.fallback-msg{font-size:17px;font-weight:800;letter-spacing:-.02em;margin:0 0 4px;line-height:1.4}
+.fallback-sub{font-size:14px;color:var(--muted);margin:0 0 22px;font-weight:500}
+.fallback-card .cta{margin-top:0;display:block;text-align:center;text-decoration:none}
