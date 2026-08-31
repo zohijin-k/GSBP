@@ -1,7 +1,6 @@
 # GSB (Good Standing Bridge)
 
 > 2026 금융 AI Challenge 예선 제출용 MVP
-> 팀 ON:IT · 조이진 (개인참여)
 
 ## 프로젝트 설명
 
