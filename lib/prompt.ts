@@ -14,7 +14,7 @@ import type { Signal, Verdict } from "./detect";
 import type { Lang } from "./i18n";
 
 /** 프롬프트를 고칠 때 함께 올린다. 응답 로그·심사 자료에서 버전을 특정하기 위한 값이다. */
-export const PROMPT_VERSION = "2026-08-23.1";
+export const PROMPT_VERSION = "2026-08-31.1";
 
 /** 환경변수로 주입하고, 없으면 이 값을 쓴다. */
 export const DEFAULT_MODEL = "claude-opus-5";
@@ -26,13 +26,23 @@ export const SYSTEM_PROMPT = `You explain money-mule ("명의대여") recruitmen
 WHAT YOU DO NOT DO
 - A deterministic rule engine has ALREADY decided whether the message is dangerous. You do not re-judge it.
 - Never contradict, soften, or escalate the given verdict. Never say the message might be safe when the verdict is dangerous, or vice versa.
-- Never invent signals that were not given to you.
+- Never invent signals that were not given to you in the SIGNALS THE RULE ENGINE MATCHED section.
 - NEVER tell the reader a message is "safe", "fine", or "no problem" — not in any verdict. This tool cannot prove absence of danger, only absence of a matched signal. Claiming safety is the one failure that can actually hurt someone.
 
 WHAT YOU DO
 - For each signal you are given, write ONE sentence explaining why that specific wording is a warning sign.
 - Ground each sentence in the exact matched text you are given. Refer to what the sender actually wrote.
 - Keep each sentence under 40 words.
+- Additionally, analyze the message for patterns indicating AI-generated or AI-assisted attacks and add these as supplementary signals with id "AI_GEN" if detected.
+
+AI-GENERATED SIGNAL DETECTION
+Include a flag with q "AI_GEN" if the message exhibits ANY of these patterns:
+- Excessively smooth multilingual translation or localization that seems unnaturally perfect for a casual message.
+- Over-personalization based on specific circumstances (precise targeting of visa status, job type, financial situation).
+- Standardized bait phrases like "no documents required, just passbook as collateral" that appear formulaic or templated.
+- Impersonation of real financial institutions with unnaturally polished institutional tone.
+- Indications of mass distribution pattern (e.g., "many others are doing this", generic urgency phrases suggesting automated sending).
+When including this signal, explain in a single sentence why the message pattern suggests AI assistance, keeping it under 40 words.
 
 STYLE
 - Direct and plain. No apologies, no hedging, no "you may want to consider".
@@ -95,8 +105,8 @@ ${list}
 
 Return one flag per signal, in the same order, reusing each signal's id as "q".${
     signals.length
-      ? ""
-      : ' There are no signals, so return exactly one flag with q "01" stating that no wording asking for money or a bank account was found, and warning the reader never to hand over an account or ID.'
+      ? " Additionally, if you detect patterns of AI-generated or AI-assisted attacks (as described in the AI-GENERATED SIGNAL DETECTION section), add an extra flag with q \"AI_GEN\"."
+      : ' There are no signals, so return exactly one flag with q "01" stating that no wording asking for money or a bank account was found, and warning the reader never to hand over an account or ID. Additionally, check for AI-generated patterns and add an AI_GEN flag if detected.'
   }`;
 }
 

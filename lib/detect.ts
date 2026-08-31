@@ -67,8 +67,8 @@ const RULES: Record<RuleId, RegExp[]> = {
 
   // 대가 제시 — 금액과 지급 표현이 같은 문장에 함께 나올 때
   COMPENSATION: [
-    /\d[\d,]*\s*(만\s?원|천\s?원|원|만)[^.!?\n]{0,16}?(드려|드립니다|드릴|지급|입금|사례|줄게|줍니다|보내드)/g,
-    /(드려|드립니다|드릴|지급|입금|사례비?|줄게)[^.!?\n]{0,16}?\d[\d,]*\s*(만\s?원|천\s?원|원|만)/g,
+    /\d[\d,]*\s*(만\s?원|천\s?원|원|만)[^.!?\n]{0,16}?(드려|드립니다|드릴|드리겠|지급|입금|사례|줄게|줍니다|보내드)/g,
+    /(드려|드립니다|드릴|드리겠|지급|입금|사례비?|줄게)[^.!?\n]{0,16}?\d[\d,]*\s*(만\s?원|천\s?원|원|만)/g,
     /\b(pay|paid|give|deposit|send)\b[^.!?\n]{0,28}?[\d,]+\s*(krw|won|만원)\b/gi,
     /[\d,]+\s*(krw|won)\b[^.!?\n]{0,28}?\b(pay|paid|give|deposit|reward)\b/gi,
   ],
@@ -254,3 +254,12 @@ export const WEAK_SIGNAL_COPY: L = {
   ko: "신호가 하나만 확인되어 위험으로 판정하지 않았습니다. 계좌나 대가 이야기가 이어지면 즉시 중단하세요.",
   en: "Only one signal was found, so this is not flagged as dangerous. Stop immediately if the conversation turns to your account or to payment.",
 };
+
+/*
+ * AI_GEN(AI 생성/보조 공격) 신호는 LLM 경로에서만 나온다.
+ * 폴백(source: "fallback")에서는 이 신호를 별도 문구로 표시하지 않고 그대로 생략한다.
+ *   - flags[] 는 "판정 근거"만 담는 자리이고, AI_GEN 은 verdict 에 영향이 없는 보조 정보다.
+ *   - 폴백으로 내려갔다는 사실은 방어 화면이 이미 별도 배너로 표시한다.
+ *   - "AI 판별 불가"를 가짜 flag 로 끼워 넣으면 실제 경고 문장과 뒤섞여 오히려 흐려진다.
+ * 이 주석이 그 결정의 근거다. (별도 상수는 두지 않는다.)
+ */
