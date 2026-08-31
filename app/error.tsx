@@ -10,7 +10,7 @@ export default function Error({ reset }: { error: Error; reset: () => void }) {
   return (
     <main className="fallback-page">
       <div className="fallback-card">
-        <span className="fallback-mark">GSB</span>
+        <span className="fallback-mark">GSBP</span>
         <p className="fallback-msg">일시적인 오류가 발생했습니다</p>
         <p className="fallback-sub">Something went wrong</p>
         <button className="cta" onClick={reset}>

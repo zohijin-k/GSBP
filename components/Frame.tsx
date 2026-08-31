@@ -35,9 +35,9 @@ export function BrandBar() {
   const lang = useLangState();
   return (
     <div className="brandbar">
-      <span className="mark">GSB</span>
+      <span className="mark">GSBP</span>
       <span className="desc">
-        {lang === "ko" ? "Good Standing Bridge · 프로토타입" : "Good Standing Bridge · prototype"}
+        {lang === "ko" ? "Good Standing Bridge Path · 프로토타입" : "Good Standing Bridge Path · prototype"}
       </span>
     </div>
   );

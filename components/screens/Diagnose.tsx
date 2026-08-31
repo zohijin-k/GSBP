@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Persona } from "@/lib/data";
-import { useLang, type L } from "@/lib/i18n";
+import { FLOW_COPY, overlapSentence, useLang, type L } from "@/lib/i18n";
 
 const MULE_PATTERN: L[] = [
   { ko: "계좌 개설 직후 대량 입출금", en: "Large deposits and withdrawals right after opening" },
@@ -165,31 +165,27 @@ export default function Diagnose({ persona, go }: { persona: Persona; go: (n: nu
         ))}
       </div>
 
-      <div className="overlap">
-        <span className="ol-lbl">
-          {lang === "ko"
-            ? `실제 나 ${persona.real.length}개 항목 중 대포통장 패턴과 겹치는 항목`
-            : "Behaviours you share with an actual money-mule account"}
-        </span>
-        <span className="ol-v">
-          <span className="ol-n">{overlap}</span>
-          {lang === "ko" && <span className="ol-unit">개</span>}
-        </span>
-      </div>
+      {/* 겹침 지표와 그 해석을 한 카드로 묶는다.
+          숫자를 스탯 타일로 떼어내면 "지금은 0이지만 달라질 수 있다"처럼 읽힌다 —
+          문장 안에 넣고, 바로 아래 punch 카피와 스크롤 없이 함께 보이게 한다. */}
+      <div className="overlap-card">
+        <p className="overlap-line">{t(overlapSentence(persona.real.length, overlap))}</p>
 
-      <div className="punch">
-        {lang === "ko" ? (
-          <>
-            현행 규제는 <b>2번과 3번을 구분하지 못하고 둘 다 차단</b>합니다. 그리고 통장을 사는
-            조직은 한도 해제를 기다리지 않습니다 — 이미 계좌를 가진 사람의 명의를 삽니다.
-          </>
-        ) : (
-          <>
-            The current rules <b>cannot tell column 2 from column 3, and block both</b>. Meanwhile
-            the groups buying accounts do not wait for a limit to be lifted — they buy the name of
-            someone who already has one.
-          </>
-        )}
+        <div className="punch">
+          {lang === "ko" ? (
+            <>
+              현행 규제는 <b>‘실제 나’와 ‘대포통장 명의자의 실제 패턴’을 구분하지 못하고 둘 다 차단</b>
+              합니다. 그리고 통장을 사는 조직은 한도 해제를 기다리지 않습니다 — 이미 계좌를 가진 사람의
+              명의를 삽니다.
+            </>
+          ) : (
+            <>
+              The current rules <b>cannot tell “who you actually are” from “what a money-mule holder
+              actually does”, and block both</b>. Meanwhile the groups buying accounts do not wait for
+              a limit to be lifted — they buy the name of someone who already has one.
+            </>
+          )}
+        </div>
       </div>
 
       <div className="note">
@@ -210,8 +206,13 @@ export default function Diagnose({ persona, go }: { persona: Persona; go: (n: nu
         )}
       </div>
 
+      {/* 하단 분기 — 탭바는 그대로 두고, 다음 화면으로 가는 두 갈래를 명시한다.
+          go() 는 GsbApp 의 화면 상태를 그대로 재사용한다(3 = 경로, 4 = 방어). */}
       <button className="cta" onClick={() => go(3)}>
-        {t({ ko: "가장 유리한 경로 찾기", en: "Find the strongest route" })}
+        {t(FLOW_COPY.diagnoseToRoutes)}
+      </button>
+      <button className="cta ghost" onClick={() => go(4)}>
+        {t(FLOW_COPY.diagnoseToDefend)}
       </button>
     </section>
   );

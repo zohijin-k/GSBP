@@ -19,19 +19,19 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "GSB — Good Standing Bridge",
+  title: "GSBP — Good Standing Bridge Path",
   description: DESCRIPTION,
   openGraph: {
-    title: "GSB — Good Standing Bridge",
+    title: "GSBP — Good Standing Bridge Path",
     description: DESCRIPTION,
     url: SITE_URL,
-    siteName: "GSB",
+    siteName: "GSBP",
     locale: "ko_KR",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "GSB — Good Standing Bridge",
+    title: "GSBP — Good Standing Bridge Path",
     description: DESCRIPTION,
   },
 };

@@ -5,7 +5,7 @@ export default function NotFound() {
   return (
     <main className="fallback-page">
       <div className="fallback-card">
-        <span className="fallback-mark">GSB</span>
+        <span className="fallback-mark">GSBP</span>
         <p className="fallback-msg">요청하신 페이지를 찾을 수 없습니다</p>
         <p className="fallback-sub">This page could not be found</p>
         <Link className="cta" href="/">

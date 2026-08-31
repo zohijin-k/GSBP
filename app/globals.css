@@ -239,21 +239,24 @@ button:focus-visible,[tabindex]:focus-visible{outline:2.5px solid var(--primary)
 .seg:hover::before{background:var(--muted)}
 .seg[aria-current="true"]:hover::before{background:var(--primary)}
 
-/* 겹침 지표 — "규제가 2번과 3번을 구분하지 못한다"를 숫자 하나로 증명한다 */
-.overlap{
-  margin-top:8px;padding:15px 16px;border-radius:13px;
-  border:1.5px solid var(--ok);background:var(--ok-soft);text-align:center;
+/* 겹침 지표 — 숫자를 문장 안에 넣고, 바로 아래 해석과 한 카드로 묶는다.
+   숫자만 스탯 타일로 떼어내면 "지금은 0이지만 달라질 수 있다"처럼 읽힌다. */
+.overlap-card{
+  margin-top:16px;border:1.5px solid var(--ok);border-radius:13px;
+  background:var(--ok-soft);overflow:hidden;
 }
-.overlap .ol-lbl{display:block;font-size:13.5px;line-height:1.5;font-weight:600;color:var(--ink-2)}
-.overlap .ol-v{display:flex;align-items:baseline;justify-content:center;gap:3px;margin-top:5px}
-.overlap .ol-n{font-size:32px;font-weight:800;line-height:1.15;letter-spacing:-.03em;color:var(--ok);font-variant-numeric:tabular-nums lining-nums}
-.overlap .ol-unit{font-size:15px;font-weight:700;color:var(--ok)}
+.overlap-line{
+  margin:0;padding:14px 16px 13px;font-size:13.5px;line-height:1.6;
+  font-weight:600;color:var(--ink-2);
+}
 
 .punch{
   margin:18px 0 0;padding:16px 17px;border-radius:13px;background:var(--primary);
   font-size:14.5px;line-height:1.65;font-weight:600;color:var(--surface);
 }
 .punch b{font-weight:800}
+/* 카드 안에 들어갈 때는 여백·모서리를 카드에 맞춘다 */
+.overlap-card .punch{margin:0;border-radius:0}
 
 /* ---------- bank list ---------- */
 .banks{display:flex;flex-direction:column;gap:11px}

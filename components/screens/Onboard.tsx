@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { COORDS, PERSONAS, type Persona } from "@/lib/data";
-import { useLang } from "@/lib/i18n";
+import { FLOW_COPY, useLang } from "@/lib/i18n";
 
 interface Props {
   persona: Persona;
@@ -186,8 +186,10 @@ export default function Onboard({ persona, onPersona, scanned, onScanned, go }: 
             </div>
           </div>
 
+          {/* 체류자격 판정 결과 → 진단 화면으로 넘어가는 명시적 CTA.
+              문구는 lib/i18n.ts 의 FLOW_COPY.onboardToDiagnose 에서 고친다. */}
           <button className="cta" onClick={() => go(2)}>
-            {t({ ko: "내 상태 진단 보기", en: "See my diagnosis" })}
+            {t(FLOW_COPY.onboardToDiagnose)}
           </button>
         </>
       )}

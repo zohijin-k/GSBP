@@ -31,7 +31,7 @@ export default function GlobalError({ reset }: { error: Error; reset: () => void
               marginBottom: 18,
             }}
           >
-            GSB
+            GSBP
           </div>
           <p style={{ fontSize: 17, fontWeight: 700, margin: "0 0 4px" }}>
             일시적인 오류가 발생했습니다
