@@ -1,58 +1,95 @@
 # GSB (Good Standing Bridge)
 
-> 2026 금융 AI Challenge 예선 제출용 MVP
+**서비스 설명:** 체류자격별 금융정보·은행 요건 대조 기반 계좌 명의대여 사기 예방 서비스 | Evidence-based Financial Fraud Prevention for Migrants (Next.js · React · TypeScript)
 
-## 프로젝트 설명
+- **배포**: [gsb-virid.vercel.app](https://gsb-virid.vercel.app/)
+- **기술**: Next.js 16, React 19, TypeScript
+- **언어**: 한국어·영어
+- **형태**: 회원가입 없이 데모 프로필로 체험하는 단일 페이지 앱
 
-외국인등록증 명의대여를 유인하는 금융사기 피해를 막기 위한 서비스입니다.
-외국인 체류자격별로 실제 이용 가능한 금융 좌표(한도·자격 요건)를 보여주고,
-명의대여를 유인하는 메시지를 규칙 엔진 + 생성형 AI로 판별해 위험도와 법적 효과
-(전자금융거래법 등)를 안내합니다.
+## 주요 기능
 
-- **배포 URL**: https://gsb-virid.vercel.app/
-- **기술 스택**: Next.js 16 / React 19, 단일 페이지(SPA) 애플리케이션
-  (회원가입·로그인·데이터베이스 없음)
+1. **체류자격별 금융 정보** — 우즈베키스탄·베트남·필리핀 데모 프로필을 선택하면 체류자격과 남은 기간에 따라 지금 가능한 금융 서비스, 추가 조건이 필요한 서비스, 이용하기 어려운 서비스를 확인합니다.
+2. **명의대여 위험 진단** — 은행이 보는 정보와 실제 상황, 대포통장 명의자 패턴을 비교하고 명의대여로 생길 수 있는 법적·금융상 결과를 설명합니다.
+3. **은행별 준비 경로** — 공개된 은행 안내와 프로필 정보를 바탕으로 통과 가능성이 높은 순서와 충족·미충족 요건, 준비 서류 체크리스트를 보여줍니다. 결과는 참고용 가능성 안내이며 은행의 승인 판단이 아닙니다.
+4. **메시지 사기 판별** — 받은 제안 문장을 붙여넣거나 예시를 선택하면 위험 신호를 표시합니다. 규칙 기반으로 위험도를 판정하고, 설정에 따라 Claude가 판정 근거 설명을 생성합니다.
 
-### 화면 구성 (하단 탭 4개, 상단 KO/EN 이중언어 토글)
+## 화면 미리보기
 
-1. **온보딩** — 외국인등록증 인식 애니메이션(프리셋 데모, 실제 OCR 아님) →
-   체류자격별 금융 좌표 표시
-2. **진단** — "은행이 보는 나 / 실제 나 / 대포통장 명의자" 3열 패턴 대조
-3. **축적/경로** — 은행 8곳 통과 가능성 순위, 요건 충족/미충족 대조, 서류 체크리스트
-4. **방어** — 입력한 메시지를 규칙 엔진(risk / caution / clear 판정)으로 분석하고,
-   조건 충족 시 생성형 AI(Claude)로 판정 근거 설명 문장을 생성
+캡처 이미지는 `public/capture/`에 있으며, 아래 이미지는 저장소의 캡처 파일을 그대로 표시합니다.
 
-### 현재 구현 상태
+### 1. 시작 — 데모 프로필과 금융 좌표
 
-| 구분 | 항목 |
-|---|---|
-| 완료 | 규칙 엔진 기반 위험도 판정(verdict/signals), 이중언어 전환, 데모 프로필 3종, 은행 요건 대조, 남용 방지(레이트 리밋), 접근성(키보드 내비게이션 등) |
-| 코드 구현 완료 · 실 API 키 실측 검증 전 | 생성형 AI 설명 문장 생성(`source:"ai"`), AI_GEN 신호 판별, 언어별 설명 재작성, Origin 비허용 시 AI→fallback 강등 (현재 배포는 `ANTHROPIC_API_KEY` 없이 fallback 모드로 운영 중) |
-| 미구현 (MVP 범위 제외) | 실제 외국인등록증 OCR/이미지 인식, 창구 제출용 요약 파일 생성, 서류 파일 업로드, 판별 규칙 자동 학습 |
+프로필을 선택하고 등록증 인식 시연을 마치면, 해당 체류자격으로 가능한 금융 업무와 조건을 확인합니다.
+
+<p>
+  <img src="public/capture/capture50.21.png" alt="시작 화면과 데모 프로필 선택" width="220" />
+  <img src="public/capture/capture50.42.png" alt="데모 외국인등록증 목업과 인식 시연" width="220" />
+  <img src="public/capture/capture50.56.png" alt="체류자격별 계좌 상태와 금융 정보" width="220" />
+  <img src="public/capture/capture51.08.png" alt="이용 가능 여부와 조건별 금융 정보" width="220" />
+</p>
+
+### 2. 진단 — 은행이 보는 나와 실제 나
+
+은행의 확인 기준과 명의대여 계좌가 악용되는 패턴을 비교해 위험과 법적 효과를 안내합니다.
+
+<p>
+  <img src="public/capture/capture51.43.png" alt="은행이 보는 정보와 실제 상황 비교" width="220" />
+  <img src="public/capture/capture51.52.png" alt="진단 결과와 법적 효과 안내" width="220" />
+</p>
+
+### 3. 경로 — 은행별 요건과 준비 서류
+
+은행별 공개 정보에 따른 가능성 순위, 요건 상세, 서류 체크리스트를 확인합니다.
+
+<p>
+  <img src="public/capture/capture52.00.png" alt="은행별 계좌 한도 해제 가능성 순위" width="220" />
+  <img src="public/capture/capture52.10.png" alt="은행별 가능성 및 요건 안내" width="220" />
+  <img src="public/capture/capture52.20.png" alt="준비 서류 체크리스트" width="220" />
+</p>
+
+### 4. 방어 — 받은 메시지 확인
+
+문장을 붙여넣어 분석하면 위험 판정과 근거가 표시되고, 원문 속 의심 문구를 확인할 수 있습니다.
+
+<p>
+  <img src="public/capture/capture52.27.png" alt="메시지 입력과 예시 메시지" width="220" />
+  <img src="public/capture/capture52.45.png" alt="명의대여 메시지 위험 분석 결과" width="220" />
+</p>
+
+## 구현 범위와 한계
+
+- 등록증 화면은 실제 신분증이 아닌 **데모 목업**입니다. 현재 인식 애니메이션과 결과는 선택한 프리셋 데이터로 시연합니다.
+- **사용자 사진 업로드와 실제 OCR은 구현되어 있지 않습니다.** 캡처에 보이는 “Vision OCR”은 프리셋 데이터가 표시되는 데모 화면입니다.
+- 서류 체크리스트는 화면 내에서 상태를 선택하는 기능입니다. 창구 제출용 파일을 생성하거나 서류 사진을 업로드하지 않습니다.
+- 은행별 정보와 가능성 표시는 참고 자료입니다. 실제 요건과 승인 여부는 은행 및 지점에서 확인해야 합니다.
+- 메시지 판별은 확정적인 법률 판단이 아닙니다. 규칙 엔진이 기본 판정을 내리고, API 키와 Origin 설정이 허용될 때만 AI 설명을 사용할 수 있습니다.
 
 ## 로컬 실행
 
 ```bash
 npm install
-cp .env.example .env.local   # 키 없이도 실행 가능 (방어 화면은 fallback으로 동작)
-npm run dev                  # http://localhost:3000
+cp .env.example .env.local
+npm run dev
 ```
 
-## 환경변수
+브라우저에서 [http://localhost:3000](http://localhost:3000)을 여세요. `ANTHROPIC_API_KEY`가 없어도 앱은 실행되며 메시지 분석은 fallback 경로를 사용합니다.
+
+## 환경 변수
 
 | 변수 | 설명 | 기본값 |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | 설정 시 `source:"ai"` 경로 사용, 미설정 시 `source:"fallback"` | - |
-| `GSB_MODEL` | 사용할 Claude 모델 (`lib/prompt.ts`의 `DEFAULT_MODEL`) | `claude-opus-5` |
-| `GSB_ALLOWED_ORIGINS` | AI 호출을 허용할 Origin 목록. 목록 밖이면 LLM 호출 생략, fallback으로 응답 | - |
+| `ANTHROPIC_API_KEY` | 설정하면 허용된 요청에서 Claude 설명 생성에 사용 | 없음 |
+| `GSB_MODEL` | 사용할 Claude 모델 | `lib/prompt.ts`의 `DEFAULT_MODEL` |
+| `GSB_ALLOWED_ORIGINS` | AI 호출을 허용할 Origin 목록. 목록 밖 요청은 fallback으로 처리 | 없음 |
 
-## 테스트
+## 명령어
 
 ```bash
-npm test   # Jest 64/64 통과 (규칙 엔진 · 프롬프트/파서 · Origin 강등 mock 검증)
+npm run dev     # 개발 서버
+npm run build   # 프로덕션 빌드
+npm run lint    # ESLint
+npm test        # Jest 테스트
 ```
 
-## 참고
-
-- 기능별 상세 명세는 제출용 기능명세서(첨부 2) 문서를 참고하세요.
-- 배포 페이지는 대회 규정상 **2026-09-07 11:00 ~ 09-11 23:59** 접속 가능해야 합니다.
+자세한 AI 판정 동작은 [`AI_SIGNAL_FEATURE_SPEC.md`](AI_SIGNAL_FEATURE_SPEC.md)와 [`AI_SIGNAL_IMPLEMENTATION.md`](AI_SIGNAL_IMPLEMENTATION.md)를 참고하세요.

@@ -12,7 +12,7 @@ import "./globals.css";
  */
 
 const DESCRIPTION =
-  "한국에 정착한 외국인이 자신의 금융 신뢰도를 확인하고, 근거를 모아, 은행에 증명하도록 돕습니다.";
+  "한국에 체류하는 외국인이 체류자격별 금융 정보를 확인하고, 은행별 준비 경로를 찾으며, 계좌 명의대여 사기 메시지를 판별하도록 돕는 한국어·영어 모바일 서비스입니다.";
 
 /** 배포 도메인. 없으면 로컬로 폴백한다 — 없을 때 상대 URL 경고가 뜬다. */
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
